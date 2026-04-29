@@ -1,21 +1,12 @@
-name: Matrix OS Testing Pipeline
+name: Test Coverage Pipeline
 
 on:
   push:
     branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
 
 jobs:
-  test-multi-os:
-    # 1. Bật chiến lược Matrix cho 3 hệ điều hành
-    strategy:
-      fail-fast: false # Quan trọng: Để false thì 1 máy lỗi, 2 máy kia vẫn chạy tiếp để lấy kết quả
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-
-    # 2. Gán biến hệ điều hành vào máy chủ
-    runs-on: ${{ matrix.os }}
+  coverage-check:
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Source Code
@@ -26,9 +17,17 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: 'maven'
 
-    # 3. Trỏ đường dẫn vào ĐÚNG thư mục Bài 04
-    - name: Run Tests on Multiple OS
-      working-directory: ./Bai04
-      run: mvn clean test
+    # ĐỔI LỆNH: Dùng 'mvn verify' để kích hoạt luật check của JaCoCo
+    - name: Chạy Test và Kiểm tra Độ bao phủ
+      working-directory: ./Bai05
+      run: mvn clean verify
+
+    # TẢI BÁO CÁO VỀ: Trích xuất thư mục chứa HTML
+    - name: Upload JaCoCo Coverage Report
+      # Thêm điều kiện này để dù test fail (dưới 80%), báo cáo vẫn được lấy về để xem
+      if: always() 
+      uses: actions/upload-artifact@v4
+      with:
+        name: jacoco-html-report
+        path: Bai05/target/site/jacoco/
