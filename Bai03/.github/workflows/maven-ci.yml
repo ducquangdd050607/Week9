@@ -1,0 +1,37 @@
+name: Maven CI Pipeline
+
+# 1. Kích hoạt (trigger) khi có sự kiện push và pull_request
+on:
+  push:
+    branches: [ "main", "master" ] # Thay bằng tên nhánh của bạn nếu cần
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Chạy trên máy chủ Ubuntu ảo của GitHub
+
+    steps:
+    # Bước 1: Lấy code từ repository của bạn về máy ảo
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    # Bước 2: Cài đặt Java (Ở đây dùng Java 17 giống cấu hình pom.xml của bạn)
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: 'maven' # Giúp lưu cache thư viện, build lần sau sẽ nhanh hơn
+
+    # Bước 3: Thực thi vòng đời build của Maven (test và package)
+    # Lệnh 'package' sẽ tự động kích hoạt cả pha 'test' trước khi đóng gói
+    - name: Build and Test with Maven
+      run: mvn clean package
+
+    # Bước 4: Lưu giữ và xác minh tệp .jar (Upload Artifact)
+    - name: Upload JAR Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: compiled-application-jar
+        path: target/*.jar # Tìm và lưu tất cả các file .jar sinh ra trong thư mục target/
