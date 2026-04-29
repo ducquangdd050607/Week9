@@ -24,14 +24,14 @@ jobs:
         distribution: 'temurin'
         cache: 'maven' # Giúp lưu cache thư viện, build lần sau sẽ nhanh hơn
 
-    # Bước 3: Thực thi vòng đời build của Maven (test và package)
-    # Lệnh 'package' sẽ tự động kích hoạt cả pha 'test' trước khi đóng gói
+    # Bước 3: Thực thi vòng đời build của Maven
     - name: Build and Test with Maven
+      working-directory: ./Bai02 # Báo cho GitHub biết phải "cd" vào Bai02 rồi mới chạy lệnh
       run: mvn clean package
 
-    # Bước 4: Lưu giữ và xác minh tệp .jar (Upload Artifact)
+    # Bước 4: Lưu giữ và xác minh tệp .jar
     - name: Upload JAR Artifact
       uses: actions/upload-artifact@v4
       with:
         name: compiled-application-jar
-        path: target/*.jar # Tìm và lưu tất cả các file .jar sinh ra trong thư mục target/
+        path: Bai02/target/*.jar # Cập nhật lại đường dẫn vì thư mục target giờ nằm trong Bai02
