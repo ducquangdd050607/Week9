@@ -17,7 +17,6 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: 'maven'
 
     # ĐỔI LỆNH: Dùng 'mvn verify' để kích hoạt luật check của JaCoCo
     - name: Chạy Test và Kiểm tra Độ bao phủ
